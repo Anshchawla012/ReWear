@@ -1,1 +1,108 @@
+/* Background Image */
+    .background-image {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') no-repeat center center/cover;
+      filter: blur(8px) brightness(0.7);
+      z-index: -1;
+    }
 
+    /* Glassmorphism Container */
+    .glass-container {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .registration-form {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 2.5rem 2rem;
+      width: 330px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .registration-form h2 {
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 1.5rem;
+      color: #fff;
+    }
+
+    /* Input Groups */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .input-group label {
+      font-size: 1rem;
+      color: #e0e0e0;
+      margin-bottom: 0.2rem;
+    }
+
+    .input-group input {
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.25);
+      color: #222;
+      font-size: 1rem;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .input-group input:focus {
+      background: rgba(255,255,255,0.4);
+      box-shadow: 0 0 0 2px #a3d8f4;
+    }
+    /* Register Button */
+    button[type="submit"] {
+      margin-top: 0.7rem;
+      padding: 0.8rem 0;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.15);
+    }
+     button[type="submit"]:hover {
+      background: linear-gradient(90deg, #185a9d 0%, #43cea2 100%);
+      box-shadow: 0 8px 24px 0 rgba(31, 38, 135, 0.20);
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      .registration-form {
+        width: 95vw;
+        padding: 1.2rem 0.5rem;
+      }
+    }
+    .login-link{
+      color: #a3d8f4;
+      text-decoration: none;
+      font-size: 0.98rem;
+      transition: text-decoration 0.2s, color 0.2s;
+    }
+    .login-link:hover {
+       text-decoration: underline;
+    color: #fff;
+    }
