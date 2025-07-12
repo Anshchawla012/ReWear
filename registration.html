@@ -1,3 +1,70 @@
+<?php
+// Database connection settings
+$servername = "localhost";
+$username = "root"; // Change if needed
+$password = "";     // Change if needed
+$dbname = "rewear";
+
+// Initialize variables
+$errors = [];
+$success = "";
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Collect and sanitize input
+    $fullname = trim($_POST['fullname']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm-password'];
+
+    // Validate inputs
+    if (empty($fullname) || empty($email) || empty($password) || empty($confirm_password)) {
+        $errors[] = "All fields are required.";
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Invalid email format.";
+    }
+    if ($password !== $confirm_password) {
+        $errors[] = "Passwords do not match.";
+    }
+    if (strlen($password) < 6) {
+        $errors[] = "Password must be at least 6 characters.";
+    }
+
+    // If no errors, proceed
+    if (empty($errors)) {
+        // Hash password
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+        // Connect to DB
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            $errors[] = "Database connection failed: " . $conn->connect_error;
+        } else {
+            // Check if email already exists
+            $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->store_result();
+            if ($stmt->num_rows > 0) {
+                $errors[] = "Email already registered.";
+            } else {
+                // Insert user
+                $stmt = $conn->prepare("INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $fullname, $email, $password_hash);
+                if ($stmt->execute()) {
+                    $success = "Registration successful! <a href='login.html'>Login here</a>.";
+                } else {
+                    $errors[] = "Registration failed. Please try again.";
+                }
+            }
+            $stmt->close();
+            $conn->close();
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,34 +72,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration</title>
     <link rel="stylesheet" href="registration-style.css">
+    <style>
+    /* Responsive tweak for mobile */
+    @media (max-width: 400px) {
+      .registration-form {
+        width: 95vw;
+        padding: 1.2rem 0.5rem;
+      }
+    }
+    </style>
 </head>
 <body>
-     <div class="background-image"></div>
-  <div class="glass-container">
-    <form class="registration-form">
-      <h2>Create Account</h2>
-      <div class="input-group">
-        <label for="fullname">Full Name</label>
-        <input type="text" id="fullname" name="fullname" required>
-      </div>
-      <div class="input-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" required>
-      </div>
-      
-      <div class="input-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
-      </div>
-      <div class="input-group">
-        <label for="confirm-password">Confirm Password</label>
-        <input type="password" id="confirm-password" name="confirm-password" required>
-      </div>
-      <div >
-          <a href="login.html" class="login-link">Already have an Account?</a>
-      </div>
-      <button type="submit">Register</button>
-       </form>
-  </div>
+    <div class="background-image"></div>
+    <div class="glass-container">
+        <form class="registration-form" method="POST" action="">
+            <h2>Create Account</h2>
+            <?php if (!empty($errors)): ?>
+                <div style="background:#f8d7da;color:#721c24;padding:10px;border-radius:6px;font-size:0.97rem;">
+                    <?php foreach ($errors as $error) echo "• $error<br>"; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($success): ?>
+                <div style="background:#d4edda;color:#155724;padding:10px;border-radius:6px;font-size:0.97rem;">
+                    <?= $success ?>
+                </div>
+            <?php endif; ?>
+            <div class="input-group">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" name="fullname" required value="<?= htmlspecialchars($_POST['fullname'] ?? '') ?>">
+            </div>
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="input-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+            </div>
+            <div>
+                <a href="login.html" class="login-link">Already have an Account?</a>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+    </div>
 </body>
 </html>
